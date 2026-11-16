@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar'
+import { Link } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
-export default function App() {
+export default function HomeScreen() {
   const [likes, setLikes] = useState(0)
 
   return (
@@ -14,6 +15,12 @@ export default function App() {
       <Pressable onPress={() => setLikes(likes + 1)} style={styles.button}>
         <Text style={styles.buttonText}>Like</Text>
       </Pressable>
+
+      <Link href="/events" asChild>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>Events</Text>
+        </Pressable>
+      </Link>
 
       <StatusBar style="auto" />
     </View>
