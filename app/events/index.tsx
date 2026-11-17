@@ -1,14 +1,23 @@
 import { router } from 'expo-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native'
 import EventRow from '../../src/components/EventRow'
-import { events } from '../../src/data/events'
+import type { CampusEvent } from '../../src/data/events'
+import { fetchEvents } from '../../src/lib/api'
 
 export default function EventsScreen() {
+  const [events, setEvents] = useState<CampusEvent[]>([])
+  const [error, setError] = useState('')
   const [savedIds, setSavedIds] = useState<number[]>([])
   const [search, setSearch] = useState('')
 
-  // computed every render, not stored in state
+  // load once when the screen opens
+  useEffect(() => {
+    fetchEvents()
+      .then(setEvents)
+      .catch((e) => setError(e.message))
+  }, [])
+
   const shown = events.filter((e) => e.title.toLowerCase().includes(search.toLowerCase()))
 
   function toggleSaved(id: number) {
@@ -21,6 +30,7 @@ export default function EventsScreen() {
 
   return (
     <View style={styles.container}>
+      {error !== '' && <Text style={styles.error}>{error}</Text>}
       <Text style={styles.hint}>Long-press an event to save it. Saved: {savedIds.length}</Text>
       <TextInput
         style={styles.input}
@@ -54,6 +64,11 @@ const styles = StyleSheet.create({
   hint: {
     marginBottom: 12,
     color: '#4b5563',
+  },
+  error: {
+    marginBottom: 12,
+    color: '#b91c1c',
+    fontWeight: 'bold',
   },
   input: {
     minHeight: 44,
